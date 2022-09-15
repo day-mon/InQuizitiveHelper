@@ -1,3 +1,4 @@
+String.prototype.replaceAll = (search, replacement) => this.split(search).join(replacement);
 const getRandomColor = () => '#' + Math.floor(Math.random()*16777215).toString(16);
 
 let ansDiv = document.createElement('div');
@@ -77,6 +78,27 @@ ansFontUp.addEventListener('click', () => {
     ansDiv.style.fontSize =  ansDiv.style.fontSize === "" ?  '22px' : `${parseInt(ansDiv.style.fontSize.split('px')[0]) + 1}px`
 })
 
+ansDiv.addEventListener('keypress', (e) => {
+    switch (e.key) {
+        case "ArrowUp":
+        case "Up":
+            ansDiv.style.marginTop = `${parseInt(ansDiv.style.marginTop.split('px')[0]) - 15}px`
+            break;
+        case "Right":
+        case "ArrowRight":
+            ansDiv.style.marginTop = `${parseInt(ansDiv.style.marginRight.split('px')[0]) - 15}px`
+            break;
+        case "Left":
+        case "ArrowLeft":
+            ansDiv.style.marginTop = `${parseInt(ansDiv.style.marginLeft.split('px')[0]) - 15}px`
+            break;
+        case "ArrowDown":
+        case "Down":
+            ansDiv.style.marginTop = `${parseInt(ansDiv.style.marginTop.split('px')[0]) - 15}px`
+            break;
+    }
+})
+
 ansFontDown.addEventListener('click', () => {
     ansDiv.style.fontSize = ansDiv.style.fontSize === "" ?  '22px' : `${parseInt(ansDiv.style.fontSize.split('px')[0]) - 1}px`
 })
@@ -113,6 +135,7 @@ getAllAnswers.addEventListener('click', () => {
     // copy map to clipboard
     let text = ''
     map.forEach((value, key) => text += `${key}\n\n${value}\n\n\n\n`)
+    text.replaceAll(",", "")
     navigator.clipboard.writeText(text).then(_ => console.log('copied to clipboard'))
 });
 
@@ -138,8 +161,6 @@ const getAnswer = (question) => {
                 let text = dragableBox.children[1].firstChild.textContent
                 let index = choicess.indexOf(text)
                 let ans = question.correct_answer[index]
-
-
                 dragableBox.style.border = `8px solid ${ans == 'true' ? 'green' : 'red'}`
             }
 
@@ -150,7 +171,7 @@ const getAnswer = (question) => {
                 let correct_ans_field = question.correct_answer_area_label
                 let incorrect_ans_field = question.incorrect_answer_area_label
                 let field = ans === 'true' ? correct_ans_field : incorrect_ans_field
-                answer.push(`${choice} -> ${field}`)
+                answer.push(`${choice} -> ${field}\n\n`)
             }
             break;
         case "matching":
@@ -159,7 +180,7 @@ const getAnswer = (question) => {
                 let ans = question.correct_answer[i]
                 let target = question.targets[ans].text ? question.targets[ans].text : question.targets[ans]
                 let label = question.labels[i].text ? question.labels[i].text : question.labels[i]
-                answer.push(`${label.substring(0, 15)}... -> ${target}`)
+                answer.push(`${label.substring(0, 15)}... -> ${target}\n\n`)
             }
             break;
         case "dragdrop":
@@ -175,7 +196,7 @@ const getAnswer = (question) => {
                 if (ansLength === 1)
                 {
                     let target = ex[ans].text ? ex[ans].text : ex[ans]
-                    answer.push(`${i + 1} -> ${target}`)
+                    answer.push(`${i + 1} -> ${target} \n\n`)
                 }
                 else
                 {
@@ -194,7 +215,6 @@ const getAnswer = (question) => {
             let option = question.choices[index]
             let choice = option.choice
             let text = option.text
-
             answer.push(`Label -> ${choice} | Text -> ${text}`)
             break;
         case "truefalse":
