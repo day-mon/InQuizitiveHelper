@@ -14,9 +14,7 @@ let ul = document.createElement('ul');
 ul.id = 'buttonList';
 div.appendChild(ul);
 
-// ansDiv.style.marginTop = '800px'
-// ansDiv.style.marginLeft = '400px'
-// ansDiv.style.marginRight = '400px'
+
 ansDiv.style.padding = '20px'
 ansDiv.style.border = `8px solid ${getRandomColor()}`
 
@@ -26,7 +24,7 @@ ansDiv.style.position = 'fixed';
 ansDiv.style.top = '50%';
 ansDiv.style.left = '50%';
 ansDiv.style.transform = 'translateX(-50%)';
-ansDiv.style.marginTop = '400px'
+ansDiv.style.marginTop = '100px'
 
 
 
@@ -78,23 +76,16 @@ ansFontUp.addEventListener('click', () => {
     ansDiv.style.fontSize =  ansDiv.style.fontSize === "" ?  '22px' : `${parseInt(ansDiv.style.fontSize.split('px')[0]) + 1}px`
 })
 
-ansDiv.addEventListener('keypress', (e) => {
+
+document.addEventListener('keydown', (e) => {
     switch (e.key) {
         case "ArrowUp":
         case "Up":
             ansDiv.style.marginTop = `${parseInt(ansDiv.style.marginTop.split('px')[0]) - 15}px`
             break;
-        case "Right":
-        case "ArrowRight":
-            ansDiv.style.marginTop = `${parseInt(ansDiv.style.marginRight.split('px')[0]) - 15}px`
-            break;
-        case "Left":
-        case "ArrowLeft":
-            ansDiv.style.marginTop = `${parseInt(ansDiv.style.marginLeft.split('px')[0]) - 15}px`
-            break;
         case "ArrowDown":
         case "Down":
-            ansDiv.style.marginTop = `${parseInt(ansDiv.style.marginTop.split('px')[0]) - 15}px`
+            ansDiv.style.marginTop = `${parseInt(ansDiv.style.marginTop.split('px')[0]) + 15}px`
             break;
     }
 })
@@ -161,7 +152,7 @@ const getAnswer = (question) => {
                 let text = dragableBox.children[1].firstChild.textContent
                 let index = choicess.indexOf(text)
                 let ans = question.correct_answer[index]
-                dragableBox.style.border = `8px solid ${ans == 'true' ? 'green' : 'red'}`
+                dragableBox.style.border = `8px solid ${ans === 'true' ? 'green' : 'red'}`
             }
 
             for (let i = 0; i < question.choices.length; i++)
@@ -180,13 +171,12 @@ const getAnswer = (question) => {
                 let ans = question.correct_answer[i]
                 let target = question.targets[ans].text ? question.targets[ans].text : question.targets[ans]
                 let label = question.labels[i].text ? question.labels[i].text : question.labels[i]
-                answer.push(`${label.substring(0, 15)}... -> ${target}\n\n`)
+                answer.push(`${label} -> ${target}\n\n`)
             }
             break;
         case "dragdrop":
         case "dragblanks":
             let ex = question.labels ? question.labels : question.targets
-            answer.push(JSON.stringify(ex))
             let correct_ans = question.correct_answer;
             for (let i = 0; i < correct_ans.length; i++)
             {
@@ -196,16 +186,15 @@ const getAnswer = (question) => {
                 if (ansLength === 1)
                 {
                     let target = ex[ans].text ? ex[ans].text : ex[ans]
-                    answer.push(`${i + 1} -> ${target} \n\n`)
+                    answer.push(`${i + 1} -> ${target} \n`)
                 }
                 else
                 {
                     for (let j = 0; j < correct_ans[i].length; j++)
                     {
-                        let index = correct_ans[i][j]
-                        //  let target = ex[index].text ? ex[index].text : ex[index]
-
-                        answer.push(`{${i + 1}} -> ${JSON.stringify(ex[index])}`)
+                        // go over second array and find the correct answer
+                        let target = ex[correct_ans[i][j]].text ? ex[correct_ans[i][j]].text : ex[correct_ans[i][j]]
+                        answer.push(`${i + 1} -> ${target} \n`)
                     }
                 }
             }
@@ -215,7 +204,7 @@ const getAnswer = (question) => {
             let option = question.choices[index]
             let choice = option.choice
             let text = option.text
-            answer.push(`Label -> ${choice} | Text -> ${text}`)
+            answer.push(`Label -> ${choice} | Text -> ${text} | Index -> ${index}`)
             break;
         case "truefalse":
             answer.push(`ANSWER -> ${question.correct_answer}`)
@@ -227,6 +216,17 @@ const getAnswer = (question) => {
             answer.push(str)
             break;
         case "multichoice":
+
+            let mc_choice = document.getElementsByClassName("mc_choice")
+            let mc_choices = question.choices.map(i => i.text)
+            for (let j = 0 ; j < mc_choice.length; j++)
+            {
+                let dragableBox = mc_choice[j]
+                let text = dragableBox.firstChild.textContent
+                let ans = mc_choices[question.correct_answer]
+                dragableBox.style.border = `8px solid ${ans == text ? 'green' : 'red'}`
+            }
+
             let ans = question.correct_answer;
             let answers = question.choices
             let final_ans = answers[ans].text ? answers[ans].text : answers[ans]
